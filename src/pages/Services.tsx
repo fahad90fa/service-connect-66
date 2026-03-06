@@ -36,12 +36,21 @@ const Services = () => {
   return (
     <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/90 backdrop-blur-xl border-b border-border/50 px-5 pt-5 pb-3">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="sticky top-0 z-40 bg-background/80 backdrop-blur-2xl border-b border-border/40 px-5 pt-5 pb-3"
+      >
         <h1 className="font-display font-bold text-xl">Services</h1>
 
         {/* Search */}
         <div className="flex items-center gap-2 mt-3">
-          <div className="flex-1 flex items-center gap-2 bg-muted rounded-xl px-3 py-2.5">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+            className="flex-1 flex items-center gap-2 bg-muted rounded-xl px-3.5 py-2.5 focus-within:ring-2 focus-within:ring-secondary/30 transition-all"
+          >
             <Search className="w-4 h-4 text-muted-foreground" />
             <input
               type="text"
@@ -50,38 +59,57 @@ const Services = () => {
               onChange={(e) => setQuery(e.target.value)}
               className="bg-transparent text-sm w-full outline-none placeholder:text-muted-foreground"
             />
-            {query && (
-              <button onClick={() => setQuery("")}>
-                <X className="w-3.5 h-3.5 text-muted-foreground" />
-              </button>
-            )}
-          </div>
-          <button className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0">
+            <AnimatePresence>
+              {query && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0 }}
+                  onClick={() => setQuery("")}
+                >
+                  <X className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground transition-colors" />
+                </motion.button>
+              )}
+            </AnimatePresence>
+          </motion.div>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/15"
+          >
             <SlidersHorizontal className="w-4 h-4 text-primary-foreground" />
-          </button>
+          </motion.button>
         </div>
 
         {/* Category Pills */}
         <div className="flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-hide">
           {["All", ...categories.map((c) => c.name)].map((cat) => (
-            <button
+            <motion.button
               key={cat}
+              whileTap={{ scale: 0.93 }}
               onClick={() => setCategory(cat)}
-              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              className={`shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${
                 activeCategory === cat
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
             >
               {cat}
-            </button>
+            </motion.button>
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* Results */}
       <div className="px-5 mt-4">
-        <p className="text-xs text-muted-foreground mb-3">{filtered.length} services found</p>
+        <motion.p
+          key={filtered.length}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-xs text-muted-foreground mb-3"
+        >
+          {filtered.length} services found
+        </motion.p>
         <div className="grid grid-cols-2 gap-3">
           <AnimatePresence mode="popLayout">
             {filtered.map((service, i) => (
@@ -89,12 +117,20 @@ const Services = () => {
             ))}
           </AnimatePresence>
         </div>
-        {filtered.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-4xl mb-3">🔍</p>
-            <p className="text-sm text-muted-foreground">No services found</p>
-          </div>
-        )}
+        <AnimatePresence>
+          {filtered.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="text-center py-16"
+            >
+              <p className="text-5xl mb-3">🔍</p>
+              <p className="text-sm text-muted-foreground font-medium">No services found</p>
+              <p className="text-xs text-muted-foreground mt-1">Try a different search term</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

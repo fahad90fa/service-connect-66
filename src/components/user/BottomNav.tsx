@@ -1,5 +1,6 @@
 import { Home, Search, Calendar, User } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const navItems = [
   { icon: Home, label: "Home", path: "/" },
@@ -12,31 +13,43 @@ const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Hide on admin routes
-  if (location.pathname.startsWith("/admin")) return null;
+  if (location.pathname.startsWith("/admin") || location.pathname === "/login") return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-border/50 md:hidden">
+    <motion.nav
+      initial={{ y: 100 }}
+      animate={{ y: 0 }}
+      transition={{ delay: 0.3, type: "spring", stiffness: 300, damping: 30 }}
+      className="fixed bottom-0 left-0 right-0 z-50 glass-strong md:hidden"
+    >
       <div className="flex items-center justify-around py-2 px-4">
         {navItems.map(({ icon: Icon, label, path }) => {
           const isActive = location.pathname === path;
           return (
-            <button
+            <motion.button
               key={path}
               onClick={() => navigate(path)}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 ${
+              whileTap={{ scale: 0.85 }}
+              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-300 relative ${
                 isActive
-                  ? "text-secondary scale-105"
+                  ? "text-secondary"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 2} />
-              <span className="text-[10px] font-medium">{label}</span>
-            </button>
+              {isActive && (
+                <motion.div
+                  layoutId="nav-indicator"
+                  className="absolute -top-1 w-5 h-0.5 rounded-full bg-secondary"
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+              <Icon className="w-5 h-5" strokeWidth={isActive ? 2.5 : 1.8} />
+              <span className={`text-[10px] ${isActive ? "font-bold" : "font-medium"}`}>{label}</span>
+            </motion.button>
           );
         })}
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 
